@@ -1,0 +1,61 @@
+{
+  "name": "translate-vscode",
+  "displayName": "translate-vscode",
+  "description": "smallbaoo为你提供的火山翻译的插件，方便你做国际化开发。",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "translate-vscode.translateSelectedText",
+        "title": "火山翻译  zh->en"
+      },
+      {
+        "command": "translate-vscode.reloadConfig",
+        "title": "重新加载配置文件：translate-vscode.json"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "translate-vscode.translateSelectedText",
+        "key": "ctrl+e ctrl+e",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "translate-vscode.translateSelectedText",
+        "key": "cmd+e cmd+e",
+        "when": "editorTextFocus"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "pnpm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "pnpm run compile && pnpm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.54.0",
+    "@typescript-eslint/eslint-plugin": "^8.28.0",
+    "@typescript-eslint/parser": "^8.28.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1",
+    "eslint": "^9.23.0",
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "@volcengine/openapi": "^1.29.0",
+    "dayjs": "^1.11.13"
+  }
+}
