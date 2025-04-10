@@ -29,6 +29,7 @@ const initTranslateZh = (accessKeyId: string, secretKey: string) => {
       TargetLanguage: 'en',
       TextList: [text],
     })
+    console.log('翻译结果', rr)
     // @ts-ignore
     return rr.TranslationList?.[0]?.Translation
   }

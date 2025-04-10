@@ -7,8 +7,7 @@ const writeLog = (key: string, zh: string, en: string) => {
   )
   console.log(`翻译前：${zh}`)
   console.log(`翻译后：${en}`)
-  console.log(` `)
-  console.log(`json格式："${key}":["${zh}","${en}"]`)
+  console.log(`json格式："${key}":["${zh}","${en}"],`)
   console.log(` `)
   console.log(`  `)
   console.log(

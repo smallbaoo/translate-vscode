@@ -1,6 +1,8 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode'
+import * as path from 'path'
+import * as fs from 'fs'
 import handleReadConfig, { IConfig } from './readConfig'
 import initTranslateZh from './translate'
 import writeLog from './writeLog'
@@ -14,18 +16,39 @@ function convertToSnakeCase(str: string) {
   return str.toLowerCase()
 }
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
-  // Use the console to output diagnostic information (console.log) and errors (console.error)
-  // This line of code will only be executed once when your extension is activated
   console.log('欢迎使用[Hi 宝]为你提供的翻译')
 
   let config: IConfig = await handleReadConfig()
   console.log('配置文件：', config)
+
+  // 获取项目根目录
+  const workspaceFolders = vscode.workspace.workspaceFolders
+  if (!workspaceFolders) {
+    vscode.window.showErrorMessage('未打开工作区，无法监控文件。')
+    return
+  }
+  const projectRoot = workspaceFolders[0].uri.fsPath
+  // 指定要监控的文件路径
+  const filePath = path.join(projectRoot, 'translate.config.js')
+
+  // 创建文件系统观察器
+  const watcher = vscode.workspace.createFileSystemWatcher(filePath)
+
+  // 定义文件变化时的回调函数
+  const onFileChanged = async (uri: vscode.Uri) => {
+    config = await handleReadConfig()
+    // 生成一个方法
+    translateZh = initTranslateZh(config.accessKeyId, config.secretKey)
+    vscode.window.showInformationMessage('已经更新配置文件')
+  }
+
+  // 监听文件的变化事件
+  const disposable = watcher.onDidChange(onFileChanged)
+
   // 生成一个方法
   let translateZh = initTranslateZh(config.accessKeyId, config.secretKey)
-  console.log('translateZh', translateZh)
+  // console.log('translateZh', translateZh)
 
   let reloadConfigCmd = vscode.commands.registerCommand(
     'translate-vscode.reloadConfig',
@@ -96,7 +119,12 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   )
 
-  context.subscriptions.push(selectedTextCmd, reloadConfigCmd)
+  context.subscriptions.push(
+    selectedTextCmd,
+    reloadConfigCmd,
+    watcher,
+    disposable
+  )
 }
 
 // This method is called when your extension is deactivated
