@@ -103,7 +103,7 @@ export async function activate(context: vscode.ExtensionContext) {
                       relativePath = path.relative(workspaceRoot, filePath)
                     }
                     let key = config.generateKey
-                      ? config.generateKey(relativePath, translatedText, '')
+                      ? config.generateKey(relativePath, translatedText)
                       : defaultGenerateKey()
                     // 替换文案
                     let finalText = config.replaceText.replaceAll('?', key)
