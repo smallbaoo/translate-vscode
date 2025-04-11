@@ -6,7 +6,7 @@
 
 ### 配置
 
-需要在项目根目录下，配置 translate.config.json 文件，修改配置文件后需要重新加载
+需要在项目根目录下，配置 translate.config.js 文件，修改配置文件后需要重新加载
 
 ```
 module.exports = {
@@ -14,7 +14,9 @@ module.exports = {
   secretKey: '********',
   replaceText: 'i18n.t(`?`)',
   underline: true,
-  prefix: 'text',
+  prefix: 'text_',
+  generateKey:(path, text)=>path + text,
+  callBack:(key,zh,en)=>void
 }
 ```
 

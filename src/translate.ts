@@ -1,7 +1,13 @@
+import * as vscode from 'vscode'
 import { Service } from '@volcengine/openapi'
 
 let service: Service
 let fetchApi: any
+
+export const hasChinese = (str: string) => {
+  const pattern = /[\u4e00-\u9fff]/
+  return pattern.test(str)
+}
 
 const initTranslateZh = (accessKeyId: string, secretKey: string) => {
   if (!service) {
@@ -24,14 +30,20 @@ const initTranslateZh = (accessKeyId: string, secretKey: string) => {
     if (!text) {
       return ''
     }
+
     const rr = await fetchApi({
-      SourceLanguage: 'zh',
-      TargetLanguage: 'en',
+      // SourceLanguage: 'zh',
+      TargetLanguage: hasChinese(text) ? 'en' : 'zh',
       TextList: [text],
     })
-    console.log('翻译结果', rr)
+
+    const result = rr.TranslationList?.[0]?.Translation
+
+    vscode.window.showInformationMessage(
+      '翻译错误，请检查accessKeyId、secretKey是否正确！'
+    )
     // @ts-ignore
-    return rr.TranslationList?.[0]?.Translation
+    return result || ''
   }
 }
 

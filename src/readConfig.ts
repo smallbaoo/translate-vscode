@@ -28,24 +28,27 @@ async function handleReadConfig() {
     console.log('配置路径', configFilePath)
     try {
       const data = fs.readFileSync(configFilePath, 'utf8')
+
+      console.log('读取到的配置文件，文本', data)
       // 创建沙箱环境
       const context = vm.createContext({
         module: { exports: {} },
         exports: {},
+        fs: fs, // 注入 fs 模块
+        path: path, // 注入 path 模块
       })
 
       // 在沙箱环境中执行代码
       vm.runInNewContext(data, context)
 
       // 获取导出的数据
-      const config = context.module.exports
+      config = context.module.exports
 
       console.log('读取到的文件配置', config)
-      vscode.window.showInformationMessage(
-        `读取到的配置信息如下：\n${JSON.stringify(config)}`
-      )
+      vscode.window.showInformationMessage('已经更新配置文件')
       return config
     } catch (parseError) {
+      vscode.window.showInformationMessage(`读取配置失败`)
       return config
     }
   } else {
