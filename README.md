@@ -12,10 +12,10 @@
 module.exports = {
   accessKeyId: '********',
   secretKey: '********',
-  replaceText: 'i18n.t(`?`)',
-  underline: true,
-  prefix: 'text_',
-  generateKey:(path, text)=>path + text,
+  replaceText: 'i18n.t(`?`)', // 此处的“?”用作替换key的
+  underline: true, // 启用下划线拼接，如果不满足，用generateKey你可以自定义
+  prefix: 'text_', // 几乎每个项目都有一些前缀
+  generateKey:(path, text)=>path + text, // 这里的path为路径参数，text为翻译后的原文，此函数优先级高于underline、prefix配置
 }
 ```
 

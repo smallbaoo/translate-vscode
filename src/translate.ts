@@ -39,9 +39,11 @@ const initTranslateZh = (accessKeyId: string, secretKey: string) => {
 
     const result = rr.TranslationList?.[0]?.Translation
 
-    vscode.window.showInformationMessage(
-      '翻译错误，请检查accessKeyId、secretKey是否正确！'
-    )
+    if (!result) {
+      vscode.window.showInformationMessage(
+        '翻译错误，请检查accessKeyId、secretKey是否正确！'
+      )
+    }
     // @ts-ignore
     return result || ''
   }
