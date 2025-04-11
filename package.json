@@ -1,7 +1,7 @@
 {
   "name": "translate-vscode",
-  "displayName": "translate-vscode",
-  "description": "smallbaoo为你提供的火山翻译的插件，方便你做国际化开发。",
+  "displayName": "火山翻译HiBaoo版",
+  "description": "[Hi宝]为你提供的火山翻译的插件，方便你做国际化开发。",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.90.0"
@@ -12,6 +12,7 @@
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
+    "icon": "images/icon.png",
     "commands": [
       {
         "command": "translate-vscode.translateSelectedText",

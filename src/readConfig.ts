@@ -9,8 +9,7 @@ export interface IConfig {
   replaceText?: string // ?代替翻译后的文案的下划线
   prefix?: string
   underline?: boolean // 启用下划线
-  generateKey?: (path: string, after: string, type: string) => string
-  callBack?: (key: string, before: string, after: string) => void
+  generateKey?: (path: string, after: string) => string
 }
 
 async function handleReadConfig() {
@@ -34,8 +33,8 @@ async function handleReadConfig() {
       const context = vm.createContext({
         module: { exports: {} },
         exports: {},
-        fs: fs, // 注入 fs 模块
-        path: path, // 注入 path 模块
+        // fs: fs, // 注入 fs 模块
+        // path: path, // 注入 path 模块
       })
 
       // 在沙箱环境中执行代码

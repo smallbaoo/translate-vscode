@@ -25,6 +25,7 @@ let config: IConfig
 async function updateConfig() {
   config = await handleReadConfig()
   translateZh = initTranslateZh(config.accessKeyId, config.secretKey)
+  vscode.window.showInformationMessage('已经更新配置文件')
 }
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -73,9 +74,9 @@ export async function activate(context: vscode.ExtensionContext) {
             async (progress) => {
               progress.report({ increment: 0 })
               try {
-                console.log('配置变了吗？', config, translateZh)
+                console.log('配置变了吗？', config)
                 const translatedText = await translateZh(selectedText)
-                if (hasChinese(selectedText) && translatedText) {
+                if (hasChinese(selectedText)) {
                   // 默认生成key的方式，可能会导致key过长等
                   const defaultGenerateKey = () => {
                     let defaultKey = translatedText
@@ -86,33 +87,6 @@ export async function activate(context: vscode.ExtensionContext) {
                       )
                     }
                     return defaultKey
-                  }
-
-                  const filePath = path.join(__dirname, 'local.json')
-
-                  // 示例回调
-                  const defaultCallBack = (
-                    key: string,
-                    zh: string,
-                    en: string
-                  ) => {
-                    fs.readFile(filePath, 'utf-8', (err, data) => {
-                      if (err) {
-                        // 文件不存在,忽略
-                      }
-                      let jsonData: Record<string, any> = {}
-                      try {
-                        // 解析 JSON 数据
-                        jsonData = JSON.parse(data || '{}')
-                      } catch (parseErr) {
-                        // 忽略
-                      }
-                      jsonData[key] = {
-                        zh,
-                        en,
-                      }
-                      fs.writeFileSync(filePath, JSON.stringify(jsonData))
-                    })
                   }
                   // 可以做替换
                   if (config.replaceText) {
@@ -135,13 +109,60 @@ export async function activate(context: vscode.ExtensionContext) {
                     let finalText = config.replaceText.replaceAll('?', key)
 
                     writeLog(key, selectedText, translatedText)
-                    // 副作用函数
-                    config.callBack
-                      ? config.callBack?.(key, selectedText, translatedText)
-                      : defaultCallBack(key, selectedText, translatedText)
                     editor.edit((editBuilder) => {
                       editBuilder.replace(selection, finalText)
                     })
+
+                    // 生成 local-translate.json 文件
+                    const localTranslateFilePath = path.join(
+                      projectRoot,
+                      'local-translate.json'
+                    )
+                    fs.readFile(
+                      localTranslateFilePath,
+                      'utf8',
+                      (readErr, data) => {
+                        if (readErr) {
+                          // 如果文件不存在，则创建一个空对象
+                          if (readErr.code === 'ENOENT') {
+                            data = '{}'
+                          } else {
+                            console.error('读取文件时出错:', readErr)
+                            return
+                          }
+                        }
+
+                        let existingData: Record<string, any> = {}
+                        try {
+                          // 解析 JSON 数据
+                          existingData = JSON.parse(data)
+                        } catch (parseErr) {
+                          console.error('解析 JSON 数据时出错:', parseErr)
+                          return
+                        }
+
+                        // 添加新数据
+                        existingData[key] = {
+                          zh: selectedText,
+                          en: translatedText,
+                        }
+
+                        // 将更新后的数据写入文件
+                        fs.writeFile(
+                          localTranslateFilePath,
+                          JSON.stringify(existingData, null, 2),
+                          (writeErr) => {
+                            if (writeErr) {
+                              console.error('写入文件时出错:', writeErr)
+                            } else {
+                              console.log(
+                                '数据已成功更新到 local-translate.json 文件'
+                              )
+                            }
+                          }
+                        )
+                      }
+                    )
                   } else {
                     vscode.window.showInformationMessage(
                       '翻译后：' + translatedText

@@ -16,10 +16,15 @@ module.exports = {
   underline: true,
   prefix: 'text_',
   generateKey:(path, text)=>path + text,
-  callBack:(key,zh,en)=>void
 }
 ```
 
 ### 使用
 
 ctrl+e ctrl+e 连按两次
+
+### 说明
+
+1、中->英，才会执行替换操作，会在本地生成一个 local-translate.json 的文件，方便你去后续加工整理
+2、英->中，会将翻译后的中文提醒在右下角
+3、可以使用默认的 key，也可以自定义生成 key
